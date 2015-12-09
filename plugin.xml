@@ -56,7 +56,7 @@
         <header-file src="platforms/ios/src/XWalkViewController.h"/>
         <source-file src="platforms/ios/src/XWalkViewController.m"/>
         <header-file src="platforms/ios/src/XWalkCommandDelegate.h"/>
-        <header-file src="platforms/ios/src/XWalkCommandDelegate.m"/>
+        <source-file src="platforms/ios/src/XWalkCommandDelegate.m"/>
 
         <hook type="after_plugin_install" src="hooks/ios/after_plugin_install/000-update_xcode_config.js"/>
         <hook type="before_plugin_uninstall" src="hooks/ios/before_plugin_uninstall/000-remove_xcode_config.js"/>
