@@ -49,20 +49,6 @@
         }
     }
 
-    /*
-    NSURL* baseURL = [NSBundle mainBundle].resourceURL;
-    baseURL = [baseURL URLByAppendingPathComponent:@"www"];
-
-    NSURL* url = [baseURL URLByAppendingPathComponent:@"index.html"];
-    NSError* error;
-    if ([url checkResourceIsReachableAndReturnError:&error]) {
-        [_xwalkWebView loadFileURL:url allowingReadAccessToURL:baseURL];
-    } else {
-        [_xwalkWebView loadHTMLString:error.description baseURL: nil];
-    }
-    return;
-     */
-    
     // By default, overscroll bouncing is allowed.
     // UIWebViewBounce has been renamed to DisallowOverscroll, but both are checked.
     BOOL bounceAllowed = YES;
@@ -75,10 +61,10 @@
     }
     
     if (!bounceAllowed) {
-        if ([self.xwalkWebView respondsToSelector:@selector(scrollView)]) {
-            ((UIScrollView*)[self.xwalkWebView scrollView]).bounces = NO;
+        if ([_xwalkWebView respondsToSelector:@selector(scrollView)]) {
+            ((UIScrollView*)[_xwalkWebView scrollView]).bounces = NO;
         } else {
-            for (id subview in self.xwalkWebView.subviews) {
+            for (id subview in _xwalkWebView.subviews) {
                 if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
                     ((UIScrollView*)subview).bounces = NO;
                 }
@@ -88,7 +74,7 @@
     
     NSString* decelerationSetting = [self settingForKey:@"UIWebViewDecelerationSpeed"];
     if (![@"fast" isEqualToString:decelerationSetting]) {
-        [self.xwalkWebView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
+        [_xwalkWebView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
     }
     
     NSURL* appURL = [self appUrl];
@@ -102,7 +88,7 @@
             NSURL* baseURL = [NSURL URLWithString:[NSString pathWithComponents:pathCompoments]];
             [_xwalkWebView loadFileURL:appURL allowingReadAccessToURL:baseURL];
             //NSURLRequest* appReq = [NSURLRequest requestWithURL:appURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:20.0];
-            //[self.xwalkWebView loadRequest:appReq];
+            //[_xwalkWebView loadRequest:appReq];
         } else {
             NSString* loadErr = [NSString stringWithFormat:@"ERROR: Start Page at '%@/%@' was not found.", self.wwwFolderName, self.startPage];
             NSLog(@"%@", loadErr);
@@ -111,10 +97,10 @@
             if (errorUrl) {
                 errorUrl = [NSURL URLWithString:[NSString stringWithFormat:@"?error=%@", [loadErr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] relativeToURL:errorUrl];
                 NSLog(@"%@", [errorUrl absoluteString]);
-                [self.xwalkWebView loadRequest:[NSURLRequest requestWithURL:errorUrl]];
+                [_xwalkWebView loadRequest:[NSURLRequest requestWithURL:errorUrl]];
             } else {
                 NSString* html = [NSString stringWithFormat:@"<html><body> %@ </body></html>", loadErr];
-                [self.xwalkWebView loadHTMLString:html baseURL:nil];
+                [_xwalkWebView loadHTMLString:html baseURL:nil];
             }
         }
     }];
@@ -122,20 +108,12 @@
     
 }
 
-- (void)webViewDidFinishLoad:(UIWebView*)theWebView
-{
-    // Black base color for background matches the native apps
-    theWebView.backgroundColor = [UIColor blackColor];
-    
-    return [super webViewDidFinishLoad:theWebView];
-}
-
 - (void)processOpenUrl:(NSURL*)url pageLoaded:(BOOL)pageLoaded
 {
     if (!pageLoaded) {
         // query the webview for readystate
         __weak __typeof(self) weakSelf = self;
-        [self.xwalkWebView evaluateJavaScript:@"document.readyState" completionHandler:^(NSString* _Nullable readyState, NSError * _Nullable error) {
+        [_xwalkWebView evaluateJavaScript:@"document.readyState" completionHandler:^(NSString* _Nullable readyState, NSError * _Nullable error) {
             BOOL loaded = [readyState isEqualToString:@"loaded"] || [readyState isEqualToString:@"complete"];
             if (loaded) {
                 // calls into javascript global function 'handleOpenURL'
@@ -211,37 +189,19 @@
     return errorURL;
 }
 
-/*
-// should override
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // First, ask the webview via JS if it supports the new orientation
-    NSString* jsCall = [NSString stringWithFormat:
-        @"window.shouldRotateToOrientation && window.shouldRotateToOrientation(%ld);"
-        , (long)[self mapIosOrientationToJsOrientation:interfaceOrientation]];
-    NSString* res = [webView stringByEvaluatingJavaScriptFromString:jsCall];
-
-    if ([res length] > 0) {
-        return [res boolValue];
-    }
-
-    // if js did not handle the new orientation (no return value), use values from the plist (via supportedOrientations)
-    return [self supportsOrientation:interfaceOrientation];
-}
-*/
 - (void)viewDidUnload
 {
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 
-    self.xwalkWebView = nil;
+    _xwalkWebView = nil;
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
 
     [super viewDidUnload];
 }
 
 - (void)dealloc {
-    self.xwalkWebView = nil;
+    _xwalkWebView = nil;
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
 }
 
@@ -249,7 +209,7 @@
 -(void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
     NSLog(@"Resetting plugins due to page load.");
     [_commandQueue resetRequestId];
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginResetNotification object:self.xwalkWebView]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginResetNotification object:_xwalkWebView]];
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
@@ -262,7 +222,7 @@
      */
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPageDidLoadNotification object:self.xwalkWebView]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPageDidLoadNotification object:_xwalkWebView]];
 }
 
 /**
