@@ -51,12 +51,8 @@
         <framework src="platforms/ios/frameworks/GCDWebServer.framework" custom="true"/>
         <framework src="platforms/ios/frameworks/XWalkView.framework" custom="true"/>
 
-        <header-file src="platforms/ios/src/XWalkAppDelegate+Swizzling.h"/>
-        <source-file src="platforms/ios/src/XWalkAppDelegate+Swizzling.m"/>
-        <header-file src="platforms/ios/src/XWalkViewController.h"/>
-        <source-file src="platforms/ios/src/XWalkViewController.m"/>
-        <header-file src="platforms/ios/src/XWalkCommandDelegate.h"/>
-        <source-file src="platforms/ios/src/XWalkCommandDelegate.m"/>
+        <header-file src="platforms/ios/src/XWalkWebViewEngine.h"/>
+        <source-file src="platforms/ios/src/XWalkWebViewEngine.m"/>
 
         <hook type="after_plugin_install" src="hooks/ios/after_plugin_install/000-update_xcode_config.js"/>
         <hook type="before_plugin_uninstall" src="hooks/ios/before_plugin_uninstall/000-remove_xcode_config.js"/>

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a Apache V2.0 license that can be
 // found in the LICENSE file.
 
-#include "AppDelegate.h"
+#import <Cordova/CDVPlugin.h>
+#import <Cordova/CDVWebViewEngineProtocol.h>
 
-@interface AppDelegate (Swizzling)
+@interface XWalkWebViewEngine : CDVPlugin <CDVWebViewEngineProtocol>
 
 @end
