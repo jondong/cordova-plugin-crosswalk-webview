@@ -4,7 +4,11 @@
 
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVWebViewEngineProtocol.h>
+#import <WebKit/WebKit.h>
 
 @interface XWalkWebViewEngine : CDVPlugin <CDVWebViewEngineProtocol>
+
+@property (nonatomic, strong, readonly) id <WKUIDelegate> uiDelegate;
+@property (nonatomic, strong, readonly) id <WKNavigationDelegate> navigationDelegate;
 
 @end
