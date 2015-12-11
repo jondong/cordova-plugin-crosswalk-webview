@@ -4,6 +4,10 @@
 
 #import <WebKit/WebKit.h>
 
+@class XWalkWebViewEngine;
+
 @interface XWalkUIDelegate : NSObject <WKUIDelegate>
+
+- (id)initWithEngine:(XWalkWebViewEngine*)engine;
 
 @end

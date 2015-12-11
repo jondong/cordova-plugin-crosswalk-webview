@@ -48,9 +48,18 @@
 
     <!-- iOS -->
     <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <preference>
+                <param name="CordovaWebViewEngine" value="XWalkWebViewEngine"/>
+            </preference>
+        </config-file>
         <framework src="platforms/ios/frameworks/GCDWebServer.framework" custom="true"/>
         <framework src="platforms/ios/frameworks/XWalkView.framework" custom="true"/>
 
+        <header-file src="platforms/ios/src/XWalkNavigationDelegate.h"/>
+        <source-file src="platforms/ios/src/XWalkNavigationDelegate.m"/>
+        <header-file src="platforms/ios/src/XWalkUIDelegate.h"/>
+        <source-file src="platforms/ios/src/XWalkUIDelegate.m"/>
         <header-file src="platforms/ios/src/XWalkWebViewEngine.h"/>
         <source-file src="platforms/ios/src/XWalkWebViewEngine.m"/>
 

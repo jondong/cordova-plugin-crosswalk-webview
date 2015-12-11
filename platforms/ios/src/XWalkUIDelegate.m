@@ -4,6 +4,21 @@
 
 #import "XWalkUIDelegate.h"
 
+#import "XWalkWebViewEngine.h"
+
+@interface XWalkUIDelegate ()
+
+@property(nonatomic, weak) XWalkWebViewEngine* engine;
+
+@end
+
 @implementation XWalkUIDelegate
+
+- (id)initWithEngine:(XWalkWebViewEngine*)engine {
+    if (self = [super init]) {
+        _engine = engine;
+    }
+    return self;
+}
 
 @end

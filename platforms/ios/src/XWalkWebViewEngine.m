@@ -4,10 +4,10 @@
 
 #import "XWalkWebViewEngine.h"
 
+#import <Cordova/NSDictionary+CordovaPreferences.h>
 #import <XWalkView/XWalkView.h>
 #import "XWalkNavigationDelegate.h"
 #import "XWalkUIDelegate.h"
-//#import "NSDictionary+CordovaPreferences.h"
 
 //#import <objc/message.h>
 
@@ -34,11 +34,23 @@
 }
 
 - (void)pluginInitialize {
+    self.uiDelegate = [[XWalkUIDelegate alloc] initWithEngine:self];
+    [self.engineWebView setUIDelegate:self.uiDelegate];
+    self.navigationDelegate = [[XWalkNavigationDelegate alloc] initWithWebViewEngine:self];
+    [self.engineWebView setNavigationDelegate:self.navigationDelegate];
     [self updateSettings:self.commandDelegate.settings];
 }
 
 - (void)updateSettings:(NSDictionary*)settings {
-    // TODO: Implementation needed.
+    BOOL bounceAllowed = !([settings cordovaBoolSettingForKey:@"DisallowOverscroll" defaultValue:NO]);
+    if (!bounceAllowed) {
+        self.engineWebView.scrollView.bounces = NO;
+    }
+    
+    NSString* decelerationSetting = [settings cordovaSettingForKey:@"UIWebViewDecelerationSpeed"];
+    if (![@"fast" isEqualToString:decelerationSetting]) {
+        [self.engineWebView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
+    }
 }
 
 - (id)loadRequest:(NSURLRequest*)request {
@@ -62,9 +74,8 @@
 }
 
 - (void)updateWithInfo:(NSDictionary*)info {
-    id <WKNavigationDelegate> navigationDelegateValue = [info objectForKey:kCDVWebViewEngineWKNavigationDelegate];
-    id <WKUIDelegate> uiDelegateValue = [info objectForKey:kCDVWebViewEngineWKUIDelegate];
-    NSDictionary* settings = [info objectForKey:kCDVWebViewEngineWebViewPreferences];
+    //id <WKNavigationDelegate> navigationDelegateValue = [info objectForKey:kCDVWebViewEngineWKNavigationDelegate];
+    //id <WKUIDelegate> uiDelegateValue = [info objectForKey:kCDVWebViewEngineWKUIDelegate];
     
     /*
     if (uiWebViewDelegate &&
@@ -74,6 +85,7 @@
     }
     */
     
+    NSDictionary* settings = [info objectForKey:kCDVWebViewEngineWebViewPreferences];
     if (settings && [settings isKindOfClass:[NSDictionary class]]) {
         [self updateSettings:settings];
     }
