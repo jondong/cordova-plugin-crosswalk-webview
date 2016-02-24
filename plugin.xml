@@ -49,9 +49,7 @@
     <!-- iOS -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <preference>
-                <param name="CordovaWebViewEngine" value="XWalkWebViewEngine"/>
-            </preference>
+            <preference name="CordovaWebViewEngine" value="XWalkWebViewEngine"/>
         </config-file>
         <framework src="platforms/ios/frameworks/GCDWebServer.framework" custom="true"/>
         <framework src="platforms/ios/frameworks/XWalkView.framework" custom="true"/>
